@@ -191,7 +191,7 @@ def main(): # główny proces gry
                     x3+=16
                     x4+=1
             terrain=PlantGrass(terrain)               # sadzenie trawy
-            structures=PlaceStone(terrain,structures) # stawianie kamieni
+            #structures=PlaceStone(terrain,structures) # stawianie kamieni
             x3=0
             x4=0
             for a in range(x2):  # stawianie tilów w odpowiednich miejscach z odpowiednimi teksturami
