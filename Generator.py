@@ -9,7 +9,7 @@ screen=pygame.display.set_mode((600,600)) # okno 600x600
 pygame.display.set_caption("Terrain generator") # nazwa okna
 done=False
 imgDir=path.join(path.dirname(__file__),'Textures')   # folder gry
-rockTexture=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock14.png')).convert()  #
+rockTexture=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock9.png')).convert()  #
 rocksTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'stone01.png')).convert()                                    #
 grassTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'grass01.png')).convert_alpha()                              #  Wczytywanie potrzebnych tekstur
 dirtTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'dirt01.png')).convert()                                      # 
@@ -44,7 +44,7 @@ class Tile(pygame.sprite.Sprite): # klasa do tworzenia płytek do terenu
 def main(): # główny proces gry
     def generation(): # generacja
         try:
-            def PlaceStone(OldTerrain,OldStructures): # stawia kamień na istniejących płytach kamienia z warstwy terrain
+            def PlaceStone(OldTerrain): # stawia kamień na istniejących płytach kamienia z warstwy terrain
                 Structures=[]
                 for j in range(len(OldTerrain)):
                     lista=[]
@@ -54,9 +54,11 @@ def main(): # główny proces gry
                 x=0
                 for i in range(x2):
                     y=0
-                    for i in range(y2):
-                        if OldTerrain[x][y]==0:
+                    for j in range(y2):
+                        if OldTerrain[x][y]==1:
                              Structures[x][y]=0
+                        else:
+                            pass
                         y+=1
                     x+=1
                 return Structures
@@ -64,30 +66,15 @@ def main(): # główny proces gry
                 def Countdirt():
                     pass
             def PlantGrass(OldTerrain): # sadzi trawę na mapie omijając kamień
-                def CountStone(map1,x,y):
-                    i=-1
-                    for a in range(3):
-                        j=-1
-                        for b in range(3):
-                            neighbourX=x+i
-                            neighbourY=y+j
-                            if i==0 and j==0:
-                                if map1[neighbourX][neighbourY]==0:
-                                    return 1
-                            j=j+1
-                        i=i+1
-                    return 0
                 NewTerrain=OldTerrain
                 x=0
                 for i in range(x2):
                     y=0
                     for j in range(y2):
-                        nbs=CountStone(OldTerrain,x,y)
-                        if OldTerrain[x][y]==1:
-                            if nbs>0:
-                                pass
-                            else:
-                                NewTerrain[x][y]=2
+                        if OldTerrain[x][y]==0:
+                            pass
+                        else:
+                            NewTerrain[x][y]=2
                         y=y+1
                     x=x+1
                 return NewTerrain
@@ -190,8 +177,7 @@ def main(): # główny proces gry
                         y4+=1
                     x3+=16
                     x4+=1
-            terrain=PlantGrass(terrain)               # sadzenie trawy
-            #structures=PlaceStone(terrain,structures) # stawianie kamieni
+            terrain=PlantGrass(terrain)    # sadzenie trawy
             x3=0
             x4=0
             for a in range(x2):  # stawianie tilów w odpowiednich miejscach z odpowiednimi teksturami
@@ -212,23 +198,25 @@ def main(): # główny proces gry
                     y4=y4+1
                 x3+=16
                 x4=x4+1
+            structures=PlaceStone(terrain) # stawianie kamieni
             x3=0
             x4=0
-            #for a in range(x2): # stawianie struktur
-            #    y4=0
-            #    y3=0
-            #   for b in range(y2):
-            #        if structures[x4][y4]=='-':
-            #            pass
-            #        elif structures[x4][y4]==0:
-            #            t=Tile(4,x3,y3)
-            #        structuresL.add(t)
-            #        y3+=16
-            #        y4+=1
-            #    x3+=16
-            #    y4+=1
+            for a in range(x2): # stawianie struktur
+                y4=0
+                y3=0
+                for b in range(y2):
+                    if structures[x4][y4]=='-':
+                        pass
+                    elif structures[x4][y4]==0:
+                        t=Tile(4,x3,y3)
+                        structuresL.add(t)
+                    y3+=16
+                    y4+=1
+                x3+=16
+                y4+=1
+            print(terrain)
             terrainL.draw(screen)    # 
-            #structuresL.draw(screen) # wyświetlanie wszystkiego na ekranie
+            structuresL.draw(screen) # wyświetlanie wszystkiego na ekranie
             pygame.display.flip()    #
         except ValueError:
             messagebox.showwarning("Warning","Jako wielkość należy podać liczby!")
