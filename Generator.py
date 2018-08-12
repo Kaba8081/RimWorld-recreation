@@ -5,25 +5,25 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 pygame.init()
-screen=pygame.display.set_mode((600,600))
-pygame.display.set_caption("Terrain generator")
-imgDir=path.join(path.dirname(__file__),'Textures')
+screen=pygame.display.set_mode((600,600)) # okno 600x600
+pygame.display.set_caption("Terrain generator") # nazwa okna
 done=False
-rockTexture=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock14.png')).convert()
-rocksTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'stone01.png')).convert()
-grassTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'grass01.png')).convert_alpha()
-dirtTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'dirt01.png')).convert()
-treeTexture=pygame.image.load(path.join(path.join(path.join(imgDir,'Plants'),'tree01'),'01.png')).convert_alpha()
+imgDir=path.join(path.dirname(__file__),'Textures')   # folder gry
+rockTexture=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock14.png')).convert()  #
+rocksTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'stone01.png')).convert()                                    #
+grassTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'grass01.png')).convert_alpha()                              #  Wczytywanie potrzebnych tekstur
+dirtTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'dirt01.png')).convert()                                      # 
+treeTexture=pygame.image.load(path.join(path.join(path.join(imgDir,'Plants'),'tree01'),'01.png')).convert_alpha()                 #
 
 BLACK=(0, 0, 0)
 
 global terrain
-terrain=[]
-structures=[]
-furniture=[]
+terrain=[]    #  \
+structures=[] #  | 3 warstwy na których zapisywane są dane terenu, struktur i mebli
+furniture=[]  #  /
 #map1=[terrain,structures,furniture] ---> skopiować i przenieć do systemu zapisu
 
-class Tile(pygame.sprite.Sprite):
+class Tile(pygame.sprite.Sprite): # klasa do tworzenia płytek do terenu
     def __init__(self,value,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((16,16))
@@ -41,10 +41,10 @@ class Tile(pygame.sprite.Sprite):
             self.image = rockTexture
         self.rect.top=y
         self.rect.left=x
-def main():
-    def generation():
+def main(): # główny proces gry
+    def generation(): # generacja
         try:
-            def PlaceStone(OldTerrain,OldStructures):
+            def PlaceStone(OldTerrain,OldStructures): # stawia kamień na istniejących płytach kamienia z warstwy terrain
                 Structures=[]
                 for j in range(len(OldTerrain)):
                     lista=[]
@@ -60,10 +60,10 @@ def main():
                         y+=1
                     x+=1
                 return Structures
-            def PlantTrees(OldTerrain):
+            def PlantTrees(OldTerrain): # sadzi drzewa na mapie
                 def Countdirt():
                     pass
-            def PlantGrass(OldTerrain):
+            def PlantGrass(OldTerrain): # sadzi trawę na mapie omijając kamień
                 def CountStone(map1,x,y):
                     i=-1
                     for a in range(3):
@@ -91,7 +91,7 @@ def main():
                         y=y+1
                     x=x+1
                 return NewTerrain
-            def doSimulationStep(OldTerrain):
+            def doSimulationStep(OldTerrain):   # wygładza wygenerowany teren
                 def countAliveNeighbours(map1,x,y):
                     i=-1
                     count=0
@@ -133,13 +133,11 @@ def main():
                         y+=1
                     x+=1
                 return NewTerrain
-            terrainL=pygame.sprite.Group()
-            structuresL=pygame.sprite.Group()
-            GRASS=(91,204,110)
-            ROCKS=(123,124,123)
+            terrainL=pygame.sprite.Group()     #
+            structuresL=pygame.sprite.Group()  #  grupy spritów na mapie
             import random
             global x,y,z,d,terrain,structures
-            if not isinstance(x, int):
+            if not isinstance(x, int):      #[
                 x2=int(x.get())
             else:
                 x2=x
@@ -151,14 +149,14 @@ def main():
                 z2=int(z.get())
             else:
                 z2=z
-            if not isinstance(d, int):
-                d2=int(d.get())
+            if not isinstance(d, int):  
+                d2=int(d.get())             #] - sprawdza czy zmienne są zdatne do odczytania
             else:
                 d2=d
             x3=0
-            screen.fill((0,0,0))
+            screen.fill((0,0,0)) 
             terrain=[]
-            for a in range(x2):
+            for a in range(x2): # wypełnia teren losowymi wartościami 0-1
                 y3=0
                 collumn=[]
                 for b in range(y2):
@@ -175,7 +173,7 @@ def main():
                     y3+=16
                 terrain.append(collumn)
                 x3+=16
-            for loop in range(d2):
+            for loop in range(d2): # wygładza teren określoną ilość razy
                 terrain=doSimulationStep(terrain)
                 x3=0
                 x4=0
@@ -192,11 +190,11 @@ def main():
                         y4+=1
                     x3+=16
                     x4+=1
-            terrain=PlantGrass(terrain)
-            structures=PlaceStone(terrain,structures)
+            terrain=PlantGrass(terrain)               # sadzenie trawy
+            structures=PlaceStone(terrain,structures) # stawianie kamieni
             x3=0
             x4=0
-            for a in range(x2):
+            for a in range(x2):  # stawianie tilów w odpowiednich miejscach z odpowiednimi teksturami
                 y4=0
                 y3=0
                 for b in range(y2):
@@ -216,7 +214,7 @@ def main():
                 x4=x4+1
             x3=0
             x4=0
-            for a in range(x2):
+            for a in range(x2): # stawianie struktur
                 y4=0
                 y3=0
                 for b in range(y2):
@@ -229,12 +227,12 @@ def main():
                     y4+=1
                 x3+=16
                 y4+=1
-            terrainL.draw(screen)
-            structuresL.draw(screen)
-            pygame.display.flip()
+            terrainL.draw(screen)    # 
+            structuresL.draw(screen) # wyświetlanie wszystkiego na ekranie
+            pygame.display.flip()    #
         except ValueError:
             messagebox.showwarning("Warning","Jako wielkość należy podać liczby!")
-    root = Tk()
+    root = Tk() #[
     root.title('Terrain Generator Settings')
     mainframe = ttk.Frame(root,padding='3 3 12 12')
     mainframe.grid(column=0, row=0,sticky=(N,W,E,S))
@@ -261,9 +259,9 @@ def main():
     ttk.Label(mainframe,text='Ilość wygładzeń:').grid(column=1,row=4)
     ttk.Button(mainframe,text='Generuj',command=generation).grid(column=3,row=4)
     for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
-    root.mainloop()
+    root.mainloop() #] - menu generowania
     global done
-    while not done:
+    while not done: # główna pętla pygame
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
