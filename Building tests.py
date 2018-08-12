@@ -20,6 +20,15 @@ wood=[]
 for i in range(17):
     wood.append(pygame.image.load(path.join(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'walls'),'Wood'),'WoodenWall_'+str(index)+'.png')).convert())
     index+=1
+index=2
+floors=[]
+for i in range(2):
+    floors.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Floors'),'Carpet'+str(index)+'.png')).convert())
+    index+=1
+floors.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Floors'),'Concrete.png')).convert())
+floors.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Floors'),'stone.png')).convert())
+floors.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Floors'),'Wood.png')).convert())
+print(floors)
 #] - wczytywanie teksutr
 class Tile(pygame.sprite.Sprite): # klasa do tworzenia tilów na mapie
     def __init__(self,value,x,y):
@@ -30,7 +39,21 @@ class Tile(pygame.sprite.Sprite): # klasa do tworzenia tilów na mapie
         self.image=value
         self.rect.top=y
         self.rect.left=x
-    def StructureInit(self,lista,terrain,x,y): # inicjalizacja struktur i dobieranie odpowiednich tekstur
+    def StructureInit(self,lista,terrain,x,y,*value): # inicjalizacja struktur i dobieranie odpowiednich tekstur
+        def Floors(terrain,x,y,lista,value):
+            print(value)
+            if value==3:
+                self.image=lista[0]
+            if value==4:
+                self.image=lista[1]
+            if value==5:
+                self.image=lista[2]
+            if value==6:
+                self.image=lista[3]
+            if value==7:
+                self.image=lista[4]
+            if value==8:
+                self.image=lista[5]
         def CheckNeighbours(terrain,x,y):
             Neighbours=[]
             Combination=0
@@ -88,6 +111,8 @@ class Tile(pygame.sprite.Sprite): # klasa do tworzenia tilów na mapie
                 self.image=lista[14]
             elif Neighbours[0][1]==1 and Neighbours[1][0]==0 and Neighbours[1][2]==1 and Neighbours[2][1]==1:
                 self.image=lista[15]
+        if len(lista)<17:
+            return Floors(terrain,x,y,lista,value)
         a=CheckNeighbours(terrain,x,y)
         b=CombinationChecking(a,lista)
 terrain=[]
@@ -124,6 +149,26 @@ while not done: # główna pętla gry
                 index=2
                 lista=wood
                 material='wood'
+            elif event.key== pygame.K_3:
+                lista=floors
+                if index==3:
+                    index=4
+                    material='carpet_green'
+                elif index==4:
+                    index=5
+                    material='carpet_red'
+                elif index==5:
+                    index=6
+                    material='concrete'
+                elif index==6:
+                    index=7
+                    material='stone_floor'
+                elif index==7:
+                    index=8
+                    material='wooden_floor'
+                else:
+                    index=3
+                    material='carpet_blue'
         if event.type== pygame.MOUSEBUTTONDOWN: # naciśnięcie przycisku myszy
             if pygame.mouse.get_pressed()[0]==1: # ppm
                 a=int(pygame.mouse.get_pos()[0]/16)
@@ -144,9 +189,13 @@ while not done: # główna pętla gry
     # Update
     if z==1: #[
         terrain[a][b]=index
-        t=Tile(lista[8],x2,y2)
+        if index>2 and index<9:
+            t=Tile(lista[0],x2,y2)
+            t.StructureInit(lista,terrain,int(x2/16),int(y2/16),index)
+        else:
+            t=Tile(lista[8],x2,y2)
+            t.StructureInit(lista,terrain,int(x2/16),int(y2/16))
         allSprites.add(t)
-        t.StructureInit(lista,terrain,int(x2/16),int(y2/16))
     if z==2:
         terrain[a][b]='-'
         t=Tile(missing,x2,y2)
