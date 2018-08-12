@@ -214,21 +214,21 @@ def main(): # główny proces gry
                 x4=x4+1
             x3=0
             x4=0
-            for a in range(x2): # stawianie struktur
-                y4=0
-                y3=0
-                for b in range(y2):
-                    if structures[x4][y4]=='-':
-                        pass
-                    elif structures[x4][y4]==0:
-                        t=Tile(4,x3,y3)
-                    structuresL.add(t)
-                    y3+=16
-                    y4+=1
-                x3+=16
-                y4+=1
+            #for a in range(x2): # stawianie struktur
+            #    y4=0
+            #    y3=0
+            #   for b in range(y2):
+            #        if structures[x4][y4]=='-':
+            #            pass
+            #        elif structures[x4][y4]==0:
+            #            t=Tile(4,x3,y3)
+            #        structuresL.add(t)
+            #        y3+=16
+            #        y4+=1
+            #    x3+=16
+            #    y4+=1
             terrainL.draw(screen)    # 
-            structuresL.draw(screen) # wyświetlanie wszystkiego na ekranie
+            #structuresL.draw(screen) # wyświetlanie wszystkiego na ekranie
             pygame.display.flip()    #
         except ValueError:
             messagebox.showwarning("Warning","Jako wielkość należy podać liczby!")
