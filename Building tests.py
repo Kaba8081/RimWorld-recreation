@@ -9,7 +9,11 @@ imgDir= path.join(path.dirname(__file__),'Textures') #folder tekstur
 
 missing=pygame.image.load(path.join(imgDir,'MissingTexture.png'))#[
 
-rock=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock9.png')).convert()
+index=1
+rocks=[]
+for i in range(17):
+    rocks.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock'+str(index)+'.png')).convert())
+    index=index+1
 #] - wczytywanie teksutr
 class Tile(pygame.sprite.Sprite): # klasa do tworzenia tilów na mapie
     def __init__(self,value,x,y):
@@ -32,17 +36,54 @@ class Tile(pygame.sprite.Sprite): # klasa do tworzenia tilów na mapie
                     neighbourX=x+x2
                     neighbourY=y+y2
                     if x2==0 and y2==0:
-                        pass
-                    elif neighbourX<0 or neighbourY<0 or neighbourX>x2-1 or neighbourY>y2-1:
+                        lista.append('x')
+                    elif neighbourX<0 or neighbourY<0 or neighbourX>623 or neighbourY>623:
                         pass
                     elif terrain[neighbourX][neighbourY]!='-':
                         lista.append(1)
                     elif terrain[neighbourX][neighbourY]=='-':
                         lista.append(0)
+                    y2=y2+1
                 Neighbours.append(lista)
+                x2=x2+1
             return Neighbours
+        def CombinationChecking(Neighbours):
+            if len(Neighbours[0])<3 or len(Neighbours[1])<3 or len(Neighbours[2])<3:
+                pass
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==1 and Neighbours[1][2]==1 and Neighbours[2][1]==1:
+                self.image=rocks[16]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==0 and Neighbours[1][2]==0 and Neighbours[2][1]==0:
+                self.image=rocks[8]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==1 and Neighbours[1][2]==0 and Neighbours[2][1]==0:
+                self.image=rocks[6]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==0 and Neighbours[1][2]==0 and Neighbours[2][1]==1:
+                self.image=rocks[7]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==0 and Neighbours[1][2]==1 and Neighbours[2][1]==0:
+                self.image=rocks[4]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==0 and Neighbours[1][2]==0 and Neighbours[2][1]==0:
+                self.image=rocks[5]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==1 and Neighbours[1][2]==0 and Neighbours[2][1]==1:
+                self.image=rocks[11]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==0 and Neighbours[1][2]==1 and Neighbours[2][1]==1:
+                self.image=rocks[2]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==0 and Neighbours[1][2]==1 and Neighbours[2][1]==0:
+                self.image=rocks[1]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==1 and Neighbours[1][2]==0 and Neighbours[2][1]==0:
+                self.image=rocks[12]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==1 and Neighbours[1][2]==1 and Neighbours[2][1]==0:
+                self.image=rocks[0]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==0 and Neighbours[1][2]==0 and Neighbours[2][1]==1:
+                self.image=rocks[3]
+            elif Neighbours[0][1]==0 and Neighbours[1][0]==1 and Neighbours[1][2]==1 and Neighbours[2][1]==1:
+                self.image=rocks[10]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==1 and Neighbours[1][2]==1 and Neighbours[2][1]==0:
+                self.image=rocks[9]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==1 and Neighbours[1][2]==0 and Neighbours[2][1]==1:
+                self.image=rocks[14]
+            elif Neighbours[0][1]==1 and Neighbours[1][0]==0 and Neighbours[1][2]==1 and Neighbours[2][1]==1:
+                self.image=rocks[15]
         a=CheckNeighbours(terrain,x,y)
-        print(a)
+        b=CombinationChecking(a)
 terrain=[]
 x=0
 for i in range(100): # wypełnianie mapy teksturami
@@ -83,12 +124,24 @@ while not done: # główna pętla gry
                 z=2
     # Update
     if z==1: #[
-        t=Tile(rock,x2,y2)
+        terrain[a][b]=1
+        t=Tile(rocks[8],x2,y2)
         allSprites.add(t)
-        t.StructureInit(0,terrain,x2,y2)
+        t.StructureInit(0,terrain,int(x2/16),int(y2/16))
     if z==2:
+        terrain[a][b]=0
         t=Tile(missing,x2,y2)
         allSprites.add(t) #] - podmienianie tilów na mapie
+    x=0
+    for i in range(len(terrain)):
+        y=0
+        for j in range(len(terrain[0])):
+            if terrain[x][y]==1:
+                t=Tile(rocks[8],x*16,y*16)
+                t.StructureInit(0,terrain,x,y)
+                allSprites.add(t)
+            y=y+1
+        x=x+1
     # drawing 
     allSprites.draw(screen)#
     pygame.display.flip()  # wyświetlanie wszystkiego na ekranie
