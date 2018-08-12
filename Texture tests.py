@@ -8,7 +8,7 @@ done=False
 page=1
 index2=1
 ww=[]
-for i in range(14):
+for i in range(17):
      ww.append(pygame.image.load(path.join(WimgDir,'WoodenWall_'+str(index2)+'.png')).convert())
      ww[index2-1].convert_alpha()
      index2=index2+1
@@ -32,7 +32,7 @@ for i in range(13):
     index=index+1
 x=48
 y=0
-for i in range(1):
+for i in range(4):
     t=Tile(ww[index],x,y)
     allSprites.add(t)
     y=y+48
@@ -43,13 +43,13 @@ def Page2():
     index2=1
     rt=[]
     ndat=[]
-    for i in range(14): # Rocks
+    for i in range(17): # Rocks
         try:
             rt.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock'+str(index)+'.png')).convert())
         except pygame.error:
             rt.append(pygame.image.load(path.join(path.join(path.dirname(__file__),'Textures'),'MissingTexture.png')).convert())
         index=index+1
-    for i in range(5): # Not discovered areas
+    for i in range(6): # Not discovered areas
         try:
             ndat.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'NotDiscoveredArea'+str(index2)+'.png')).convert_alpha())
         except pygame.error:
@@ -65,7 +65,7 @@ def Page2():
         index3=index3+1
     x=48
     y=0
-    for i in range(1):
+    for i in range(4):
         t=Tile(rt[index3],x,y)
         allSprites.add(t)
         y=y+48
@@ -73,7 +73,7 @@ def Page2():
     index3=0
     x=96
     y=0
-    for i in range(5):
+    for i in range(6):
         t=Tile(ndat[index3],x,y)
         allSprites.add(t)
         y=y+48

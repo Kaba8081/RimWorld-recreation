@@ -2,6 +2,7 @@ import pygame
 from os import path
 done=False
 pygame.init()
+pygame.font.init()
 Resolution=624
 screen = pygame.display.set_mode((Resolution, Resolution)) # okno gry
 allSprites=pygame.sprite.Group() # główna grupa spritów 
@@ -101,6 +102,10 @@ for i in range(100): # wypełnianie mapy teksturami
         y=y+16
     terrain.append(lista)
     x=x+16
+index=1
+lista=rocks
+material='rocks'
+Font=pygame.font.SysFont("Arial", 12,bold=False,italic=False)
 while not done: # główna pętla gry
     x2=0
     y2=0
@@ -113,10 +118,12 @@ while not done: # główna pętla gry
         if event.type== pygame.KEYDOWN:
             if event.key == pygame.K_1:
                 index=1
-                lista=wood
+                lista=rocks
+                material='rocks'
             elif event.key == pygame.K_2:
                 index=2
-                lista=rocks
+                lista=wood
+                material='wood'
         if event.type== pygame.MOUSEBUTTONDOWN: # naciśnięcie przycisku myszy
             if pygame.mouse.get_pressed()[0]==1: # ppm
                 a=int(pygame.mouse.get_pos()[0]/16)
@@ -141,7 +148,7 @@ while not done: # główna pętla gry
         allSprites.add(t)
         t.StructureInit(lista,terrain,int(x2/16),int(y2/16))
     if z==2:
-        terrain[a][b]=0
+        terrain[a][b]='-'
         t=Tile(missing,x2,y2)
         allSprites.add(t) #] - podmienianie tilów na mapie
     x=0
@@ -158,7 +165,16 @@ while not done: # główna pętla gry
                 allSprites.add(t)
             y=y+1
         x=x+1
-    # drawing 
-    allSprites.draw(screen)#
+    c=pygame.mouse.get_pos()
+    a=int(c[0]/16)
+    b=int(c[1]/16)
+    # drawing
+    #text='Building material: '+str(material)
+    #text2='Tile properties: ID - '+str(terrain[a][b])
+    allSprites.draw(screen)
+    label=Font.render('Building material: '+str(material),1,(168,168,168),(0,0,0))
+    screen.blit(label,(470,10))
+    label=Font.render('Tile properties: ID - '+str(terrain[a][b]),1,(168,168,168),(0,0,0))
+    screen.blit(label,(470,22))
     pygame.display.flip()  # wyświetlanie wszystkiego na ekranie
     
