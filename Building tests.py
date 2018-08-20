@@ -20,9 +20,9 @@ wood=[]
 for i in range(17):
     wood.append(pygame.image.load(path.join(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'walls'),'Wood'),'WoodenWall_'+str(index)+'.png')).convert())
     index+=1
-index=2
+index=1
 floors=[]
-for i in range(2):
+for i in range(3):
     floors.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Floors'),'Carpet'+str(index)+'.png')).convert())
     index+=1
 floors.append(pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Floors'),'Concrete.png')).convert())
@@ -41,7 +41,7 @@ class Tile(pygame.sprite.Sprite): # klasa do tworzenia tilów na mapie
         self.rect.left=x
     def StructureInit(self,lista,terrain,x,y,*value): # inicjalizacja struktur i dobieranie odpowiednich tekstur
         def Floors(terrain,x,y,lista,value):
-            print(value)
+            value=value[0]
             if value==3:
                 self.image=lista[0]
             if value==4:
