@@ -4,12 +4,15 @@ pygame.init()
 screen=pygame.display.set_mode((1366,768),pygame.FULLSCREEN)
 done=False
 Inspector_Active=False
+menu_open=False
 imgDir=path.join(path.dirname(__file__),'Textures')
 allSprites=pygame.sprite.Group()
+menuSprites=pygame.sprite.Group()
 buttons=[]
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'bar1.png')).convert_alpha())
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'button01.png')).convert_alpha())
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'button02.png')).convert_alpha())
+buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'Menu Bar.png')).convert())
 cursor=pygame.image.load(path.join(path.join(imgDir,'UI'),'cursor.png')).convert_alpha()
 Font=pygame.font.SysFont("Helvetica", 15,bold=False,italic=False)
 FontColor=(207, 210, 214)
@@ -37,6 +40,11 @@ class Button(pygame.sprite.Sprite):
             self.image=buttons[2]
             self.rect.bottom=768
             self.rect.left=x[0]
+        elif value==3:
+            self.image=buttons[3]
+            self.rect=self.image.get_rect()
+            self.rect.centerx=683
+            self.rect.centery=384
 buttonLabels=[]
 buttonLabels.append(Font.render('Architekt',1,FontColor,None))
 buttonLabels.append(Font.render('Praca',1,FontColor,None))
@@ -49,6 +57,17 @@ buttonLabels.append(Font.render('Historia',1,FontColor,None))
 buttonLabels.append(Font.render('Frakcje',1,FontColor,None))
 buttonLabels.append(Font.render('Menu',1,FontColor,None))
 FPS_label=Font.render('FPS: '+str(clock.get_fps()),0,FontColor,None)
+def Open_menu():
+    global MenuLabels
+    MenuFont=pygame.font.SysFont("Helvetica", 20,bold=False,italic=False)
+    b=Button(3)
+    menuSprites.add(b)
+    MenuLabels=[]
+    MenuLabels.append(MenuFont.render('Dźwięk/Grafika',1,FontColor,None))
+    MenuLabels.append(MenuFont.render('Rozgrywka',1,FontColor,None))
+    MenuLabels.append(Font.render('Głośność dźięków',1,FontColor,None))
+def Update_menu():
+    pass
 while not done:
     allSprites=pygame.sprite.Group()
     mousePos=pygame.mouse.get_pos()
@@ -65,16 +84,26 @@ while not done:
             elif event.key==pygame.K_F4 and pygame.key.get_pressed()[pygame.K_LALT]:
                 done=True
                 pygame.quit()
-        if event.type==pygame.MOUSEBUTTONDOWN:
-            print(mousePress)
-            if mousePress[0]==1:
-                if Inspector_Active:
-                    Inspector_Active=False
+            elif event.key==pygame.K_ESCAPE:
+                if not menu_open:
+                    Open_menu()
+                    menu_open=True
                 else:
-                    Inspector_Active=True
+                    menu_open=False
+        if event.type==pygame.MOUSEBUTTONDOWN:
+            if mousePress[0]==1:
+                if mousePos[1]<733:
+                    if Inspector_Active:
+                        Inspector_Active=False
+                    else:
+                        Inspector_Active=True
     #Update
     pointerImg_rect.topleft = pygame.mouse.get_pos()
     x=0
+    if menu_open:
+        #menuSprites=pygame.sprite.Group()
+        Update_menu()
+        allSprites.add(menuSprites)
     if Inspector_Active:
         b=Button(0)
         allSprites.add(b)
@@ -115,5 +144,8 @@ while not done:
         screen.blit(buttonLabels[index],(x,741))
         x+=136
         index+=1
+    if menu_open:
+        screen.blit(MenuLabels[0],(483,155))
+        screen.blit(MenuLabels[1],(683,155))
     pygame.display.flip()
     clock.tick(60)
