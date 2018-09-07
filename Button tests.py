@@ -6,6 +6,8 @@ done=False
 Inspector_Active=False
 menu_open=False
 SoundsVolume=100
+MusicVolume=100
+AmbientVolume=100
 imgDir=path.join(path.dirname(__file__),'Textures')
 allSprites=pygame.sprite.Group()
 menuSprites=pygame.sprite.Group()
@@ -33,7 +35,7 @@ class Cursor(pygame.sprite.Sprite):
     def update(self,pos):
         self.rect.topleft=pos
 class Button(pygame.sprite.Sprite):
-    def __init__(self,value,*x):
+    def __init__(self,value,*cords):
         pygame.sprite.Sprite.__init__(self)
         if value==0:
             self.image=pygame.Surface((432,164))
@@ -52,11 +54,11 @@ class Button(pygame.sprite.Sprite):
         elif value==1:
             self.image=buttons[1]
             self.rect.bottom=768
-            self.rect.left=x[0]
+            self.rect.left=cords[0]
         elif value==2:
             self.image=buttons[2]
             self.rect.bottom=768
-            self.rect.left=x[0]
+            self.rect.left=cords[0]
         elif value==3:
             self.image=buttons[3]
             self.rect.centerx=683
@@ -69,8 +71,8 @@ class Button(pygame.sprite.Sprite):
             self.active=False
             self.text=''
             self.image=buttons[6]
-            self.rect.left=448
-            self.rect.bottom=221
+            self.rect.left=cords[0]
+            self.rect.bottom=cords[1]
 buttonLabels=[]
 buttonLabels.append(Font.render('Architekt',1,FontColor,None))
 buttonLabels.append(Font.render('Praca',1,FontColor,None))
@@ -88,17 +90,25 @@ def Open_menu():
     global MenuLabels,inputbox
     MenuFont=pygame.font.SysFont("Helvetica", 20,bold=False,italic=False)
     menuSprites.add(Button(3))
-    menuSprites.add(Button(6))
     MenuLabels=[]
     MenuLabels.append(MenuFont.render('Dźwięk/Grafika',1,FontColor,None))
     MenuLabels.append(MenuFont.render('Rozgrywka',1,FontColor,None))
     MenuLabels.append(Font.render('Głośność dźięków',1,FontColor,None))
     MenuLabels.append(Font.render(str(SoundsVolume),1,FontColor,None))
     MenuLabels.append(Font.render('Głośność muzyki',1,FontColor,None))
+    MenuLabels.append(Font.render(str(MusicVolume),1,FontColor,None))
+    MenuLabels.append(Font.render('Głośność otoczenia',1,FontColor,None))
+    MenuLabels.append(Font.render(str(AmbientVolume),1,FontColor,None))
     inputbox=[]
-    inputbox.append(Button(6))
+    y=221
+    for i in range(3):
+        inputbox.append(Button(6,448,y))
+        menuSprites.add(Button(6,448,y))
+        y+=45
 def Update_menu():
     MenuLabels[3]=Font.render(str(SoundsVolume),1,FontColor,None)
+    MenuLabels[5]=Font.render(str(MusicVolume),1,FontColor,None)
+    MenuLabels[7]=Font.render(str(AmbientVolume),1,FontColor,None)
 def Sound_Input_Update():
     pass
 while not done:
@@ -115,19 +125,50 @@ while not done:
                     if event.key==pygame.K_BACKSPACE:
                         inputbox[0].text=inputbox[0].text[:-1]
                         SoundsVolume=inputbox[0].text
-                    elif event.unicode not in ['1','2','3','4','5','6','7','8','9','0'] or len(inputbox[0].text)>=3:
-                        pass
-                    elif event.key=='K_KP_ENTER':
+                    elif event.key==pygame.K_RETURN:
+                        if inputbox[0].text=='':
+                            inputbox[0].text='0'
+                            SoundsVolume='0'
                         inputbox[0].active=False
+                    elif event.unicode not in ['1','2','3','4','5','6','7','8','9','0'] or len(str(inputbox[0].text))>=3:
+                        pass
                     elif int(inputbox[0].text+event.unicode)>100:
                         pass
                     else:
                         inputbox[0].text+=event.unicode
                         SoundsVolume=inputbox[0].text
-                #elif inputbox[1].active:
-                #    pass
-                #elif inputbox[2].active:
-                #    pass
+                elif inputbox[1].active:
+                    if event.key==pygame.K_BACKSPACE:
+                        inputbox[1].text=inputbox[1].text[:-1]
+                        MusicVolume=inputbox[1].text
+                    elif event.key==pygame.K_RETURN:
+                        if inputbox[1].text=='':
+                            inputbox[1].text='0'
+                            MusicVolume='0'
+                        inputbox[1].active=False
+                    elif event.unicode not in ['1','2','3','4','5','6','7','8','9','0'] or len(inputbox[1].text)>=3:
+                        pass
+                    elif int(inputbox[1].text+event.unicode)>100:
+                        pass
+                    else:
+                        inputbox[1].text+=event.unicode
+                        MusicVolume=inputbox[1].text
+                elif inputbox[2].active:
+                    if event.key==pygame.K_BACKSPACE:
+                        inputbox[2].text=inputbox[2].text[:-1]
+                        AmbientVolume=inputbox[2].text
+                    elif event.key==pygame.K_RETURN:
+                        if inputbox[2].text=='':
+                            inputbox[2].text='0'
+                            AmbientVolume='0'
+                        inputbox[2].active=False
+                    elif event.unicode not in ['1','2','3','4','5','6','7','8','9','0'] or len(inputbox[2].text)>=3:
+                        pass
+                    elif int(inputbox[2].text+event.unicode)>100:
+                        pass
+                    else:
+                        inputbox[2].text+=event.unicode
+                        AmbientVolume=inputbox[2].text
             if event.key==pygame.K_LALT and pygame.key.get_pressed()[pygame.K_F4]:
                 done=True
                 pygame.quit()
@@ -148,12 +189,11 @@ while not done:
                     else:
                         Inspector_Active=True
             if menu_open:
-                if pygame.sprite.collide_rect(inputbox[0],cursor2):
-                    inputbox[0].active=True
-                #elif inputbox[1].collidepoint(event.pos):
-                #    pass
-                #elif inputbox[2].collidepoint(event.pos):
-                #    pass
+                index=0
+                for i in range(3):
+                    if pygame.sprite.collide_rect(inputbox[index],cursor2):
+                        inputbox[index].active=True
+                    index+=1
     #Update
     cursor2.update(mousePos)
     if menu_open:
@@ -161,7 +201,7 @@ while not done:
         Update_menu()
         allSprites.add(menuSprites)
         x=0
-        for i in range(1):
+        for i in range(3):
             if inputbox[x].active:
                 pass # Zmienić teksturę
             x+=1
@@ -211,6 +251,10 @@ while not done:
         screen.blit(MenuLabels[1],(663,155))
         screen.blit(MenuLabels[2],(400,185))
         screen.blit(MenuLabels[3],(450,205))
+        screen.blit(MenuLabels[4],(400,225))
+        screen.blit(MenuLabels[5],(450,250))
+        screen.blit(MenuLabels[6],(400,275))
+        screen.blit(MenuLabels[7],(450,295))
     pygame.display.flip()
     clock.tick(60)
 pygame.quit()
