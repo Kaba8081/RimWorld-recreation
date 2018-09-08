@@ -5,6 +5,8 @@ screen=pygame.display.set_mode((1366,768),pygame.FULLSCREEN)
 done=False
 Inspector_Active=False
 menu_open=False
+small_menu_open=False
+exit_confirmation_open=False
 SoundsVolume=100
 MusicVolume=100
 AmbientVolume=100
@@ -73,6 +75,8 @@ class Button(pygame.sprite.Sprite):
             self.image=buttons[6]
             self.rect.left=cords[0]
             self.rect.bottom=cords[1]
+        elif value==7:
+            pass
 buttonLabels=[]
 buttonLabels.append(Font.render('Architekt',1,FontColor,None))
 buttonLabels.append(Font.render('Praca',1,FontColor,None))
@@ -86,6 +90,16 @@ buttonLabels.append(Font.render('Frakcje',1,FontColor,None))
 buttonLabels.append(Font.render('Menu',1,FontColor,None))
 FPS_label=Font.render('FPS: '+str(clock.get_fps()),0,FontColor,None)
 cursor2=Cursor()
+def Open_menu_small():
+    global SmallMenuLabels
+    SmallMenuLabels=[]
+    SmallMenuLabels.append(Font.render("Zapisz",1,FontColor,None))
+    SmallMenuLabels.append(Font.render("Wczytaj",1,FontColor,None))
+    SmallMenuLabels.append(Font.render("Zobacz scenariusz",1,FontColor,None))
+    SmallMenuLabels.append(Font.render("Opcje",1,FontColor,None))
+    SmallMenuLabels.append(Font.render("Wróć do menu",1,FontColor,None))
+    SmallMenuLabels.append(Font.render("Wyjdź z gry",1,FontColor,None))
+    MenuSprites.add(Button(7))
 def Open_menu():
     global MenuLabels,inputbox
     MenuFont=pygame.font.SysFont("Helvetica", 20,bold=False,italic=False)
@@ -109,8 +123,9 @@ def Update_menu():
     MenuLabels[3]=Font.render(str(SoundsVolume),1,FontColor,None)
     MenuLabels[5]=Font.render(str(MusicVolume),1,FontColor,None)
     MenuLabels[7]=Font.render(str(AmbientVolume),1,FontColor,None)
-def Sound_Input_Update():
-    pass
+def  Exit_confirmation():
+    global ExitMenuLabels
+    
 while not done:
     allSprites=pygame.sprite.Group()
     mousePos=pygame.mouse.get_pos()
@@ -176,11 +191,17 @@ while not done:
                 done=True
                 pygame.quit()
             elif event.key==pygame.K_ESCAPE:
-                if not menu_open:
-                    Open_menu()
-                    menu_open=True
+                if not menu_open and not small_menu_open:
+                    Open_menu_small()
+                    small_menu_open=True
                 else:
+                    small_menu_open=False
+                if menu_open:
                     menu_open=False
+                if exit_confirmation_open:
+                    exit_confirmation_open=False
+                if small_menu_open and not menu_open and not exit_confirmation_open:
+                    small_menu_open=False
         if event.type==pygame.MOUSEBUTTONDOWN:
             if mousePress[0]==1:
                 if mousePos[1]<733:
@@ -188,12 +209,31 @@ while not done:
                         Inspector_Active=False
                     else:
                         Inspector_Active=True
-            if menu_open:
-                index=0
-                for i in range(3):
-                    if pygame.sprite.collide_rect(inputbox[index],cursor2):
-                        inputbox[index].active=True
-                    index+=1
+                if small_menu_open:
+                    if menu_open:
+                        index=0
+                        for i in range(3):
+                            if pygame.sprite.collide_rect(inputbox[index],cursor2):
+                                inputbox[index].active=True
+                            index+=1
+                    else:
+                        index=0
+                        for i in range(6):
+                            if pygame.sprite.collide_rect(inputbox[index],cursor2):
+                                if index==1:
+                                    pass
+                                if index==2:
+                                    pass
+                                if index==3:
+                                    pass
+                                if index==4:
+                                    Open_menu()
+                                    menu_open=True
+                                if index==5:
+                                    pass
+                                if index==6:
+                                    Exit_confirmation()
+                                    exit_confirmation_open=True
     #Update
     cursor2.update(mousePos)
     if menu_open:
