@@ -1,7 +1,7 @@
 import pygame
 from os import path
 pygame.init()
-screen=pygame.display.set_mode((1366,768),pygame.FULLSCREEN)
+screen=pygame.display.set_mode((1360,768),pygame.FULLSCREEN)
 done=False
 Inspector_Active=False
 menu_open=False
@@ -10,10 +10,16 @@ exit_confirmation_open=False
 SoundsVolume=100
 MusicVolume=100
 AmbientVolume=100
+
 imgDir=path.join(path.dirname(__file__),'Textures')
+
 allSprites=pygame.sprite.Group()
 menuSprites=pygame.sprite.Group()
+SmallMenuSprites=pygame.sprite.Group()
+
+SmallMenuSpitesList=[]
 buttons=[]
+
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'bar1.png')).convert_alpha())
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'button01.png')).convert())
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'button02.png')).convert())
@@ -21,6 +27,7 @@ buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'Menu Bar.png'
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'button03.png')).convert())
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'button04.png')).convert())
 buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'Sound_Input01.png')).convert())
+buttons.append(pygame.image.load(path.join(path.join(imgDir,'UI'),'Small Menu Bar.png')).convert())
 cursor=pygame.image.load(path.join(path.join(imgDir,'UI'),'cursor.png')).convert_alpha()
 Font=pygame.font.SysFont("Helvetica", 15,bold=False,italic=False)
 FontColor=(207, 210, 214)
@@ -43,40 +50,50 @@ class Button(pygame.sprite.Sprite):
             self.image=pygame.Surface((432,164))
         elif value==3:
             self.image=pygame.Surface((600,468))
+        elif value==4 or value==5:
+            self.image=pygame.Surface((200,50))
         elif value==6:
             self.image=pygame.Surface((30,15))
+        elif value==7:
+            self.image=pygame.Surface((450,390))
         else:
             self.image=pygame.Surface((136,35))
         self.rect=self.image.get_rect()
         self.image.set_colorkey((0,0,0))
-        if value==0:
+        if value==0: # Propeties bar
             self.image=buttons[0]
             self.rect.bottom=733
             self.rect.left=0
-        elif value==1:
+        elif value==1: # Button - not pressed
             self.image=buttons[1]
             self.rect.bottom=768
             self.rect.left=cords[0]
-        elif value==2:
+        elif value==2: # Button - pressed
             self.image=buttons[2]
             self.rect.bottom=768
             self.rect.left=cords[0]
-        elif value==3:
+        elif value==3: # Big menu bar
             self.image=buttons[3]
             self.rect.centerx=683
             self.rect.centery=384
-        elif value==4:
-            self.image=buttons[4]
-        elif value==5:
-            self.image=buttons[5]
-        elif value==6:
+        elif value==4: # Brown button - not pressed
+            self.image=pygame.transform.scale(buttons[4],(200,50))
+            self.rect.bottom=cords[1]
+            self.rect.left=cords[0]
+        elif value==5: # Brown button - pressed
+            self.image=pygame.transform.scale(buttons[5],(200,50))
+            self.rect.bottom=cords[1]
+            self.rect.left=cords[0]
+        elif value==6: # Input box
             self.active=False
             self.text=''
             self.image=buttons[6]
             self.rect.left=cords[0]
             self.rect.bottom=cords[1]
-        elif value==7:
-            pass
+        elif value==7: # Small menu bar
+            self.image=buttons[7]
+            self.rect.bottom=733
+            self.rect.right=1360
 buttonLabels=[]
 buttonLabels.append(Font.render('Architekt',1,FontColor,None))
 buttonLabels.append(Font.render('Praca',1,FontColor,None))
@@ -91,17 +108,46 @@ buttonLabels.append(Font.render('Menu',1,FontColor,None))
 FPS_label=Font.render('FPS: '+str(clock.get_fps()),0,FontColor,None)
 cursor2=Cursor()
 def Open_menu_small():
-    global SmallMenuLabels
+    global SmallMenuLabels,SmallMenuSprites,SmallMenuSpitesList
+    SmallMenuFont=pygame.font.SysFont("Helvetica", 17,bold=False,italic=False)
     SmallMenuLabels=[]
-    SmallMenuLabels.append(Font.render("Zapisz",1,FontColor,None))
-    SmallMenuLabels.append(Font.render("Wczytaj",1,FontColor,None))
-    SmallMenuLabels.append(Font.render("Zobacz scenariusz",1,FontColor,None))
-    SmallMenuLabels.append(Font.render("Opcje",1,FontColor,None))
-    SmallMenuLabels.append(Font.render("Wróć do menu",1,FontColor,None))
-    SmallMenuLabels.append(Font.render("Wyjdź z gry",1,FontColor,None))
-    MenuSprites.add(Button(7))
+    SmallMenuLabels.append(SmallMenuFont.render("Zapisz",1,FontColor,None))
+    SmallMenuLabels.append(SmallMenuFont.render("Wczytaj",1,FontColor,None))
+    SmallMenuLabels.append(SmallMenuFont.render("Zobacz scenariusz",1,FontColor,None))
+    SmallMenuLabels.append(SmallMenuFont.render("Opcje",1,FontColor,None))
+    SmallMenuLabels.append(SmallMenuFont.render("Wróć do menu",1,FontColor,None))
+    SmallMenuLabels.append(SmallMenuFont.render("Wyjdź z gry",1,FontColor,None))
+def Update_small_menu(MenuOpen):
+    SmallMenuSprites.add(Button(7))
+    y=405
+    for i in range(6):
+        b=Button(4,925,y)
+        SmallMenuSprites.add(b)
+        SmallMenuSpitesList.append(b)
+        y+=60
+    if not MenuOpen:
+        index=0
+        a="err"
+        for i in range(6):
+            if pygame.sprite.collide_rect(SmallMenuSpitesList[index],cursor2):
+                if index==0:
+                    a=Button(5,925,405)
+                if index==1:
+                    a=Button(5,925,465)
+                if index==2:
+                    a=Button(5,925,525)
+                if index==3:
+                    a=Button(5,925,585)
+                if index==4:
+                    a=Button(5,925,645)
+                if index==5:
+                    a=Button(5,925,705)
+                if index==6:
+                    a=Button(5,925,765)
+                SmallMenuSprites.add(a)       
+            index+=1
 def Open_menu():
-    global MenuLabels,inputbox
+    global MenuLabels,inputbox,menuSprites
     MenuFont=pygame.font.SysFont("Helvetica", 20,bold=False,italic=False)
     menuSprites.add(Button(3))
     MenuLabels=[]
@@ -128,6 +174,7 @@ def  Exit_confirmation():
     
 while not done:
     allSprites=pygame.sprite.Group()
+    SmallMenuSprites=pygame.sprite.Group()
     mousePos=pygame.mouse.get_pos()
     #Input
     for event in pygame.event.get():
@@ -191,51 +238,60 @@ while not done:
                 done=True
                 pygame.quit()
             elif event.key==pygame.K_ESCAPE:
-                if not menu_open and not small_menu_open:
-                    Open_menu_small()
-                    small_menu_open=True
-                else:
-                    small_menu_open=False
-                if menu_open:
-                    menu_open=False
-                if exit_confirmation_open:
-                    exit_confirmation_open=False
-                if small_menu_open and not menu_open and not exit_confirmation_open:
-                    small_menu_open=False
-        if event.type==pygame.MOUSEBUTTONDOWN:
-            if mousePress[0]==1:
-                if mousePos[1]<733:
-                    if Inspector_Active:
-                        Inspector_Active=False
-                    else:
-                        Inspector_Active=True
                 if small_menu_open:
                     if menu_open:
-                        index=0
-                        for i in range(3):
-                            if pygame.sprite.collide_rect(inputbox[index],cursor2):
-                                inputbox[index].active=True
-                            index+=1
+                        menu_open=False
+                    elif exit_confirmation_open:
+                         exit_confirmation_open=False
+                    elif not menu_open and not exit_confirmation_open:
+                        small_menu_open=False
+                else:
+                    if not menu_open:
+                        Open_menu_small()
+                        small_menu_open=True
+        if event.type==pygame.MOUSEBUTTONDOWN:
+            if mousePress[0]==1:
+                if small_menu_open:
+                    if menu_open:
+                        pass
+                        #index=0
+                        #for i in range(3):
+                            #if pygame.sprite.collide_rect(menuSprites[index],cursor2):
+                            #    menuSprites[index].active=True
+                            #index+=1
                     else:
                         index=0
                         for i in range(6):
-                            if pygame.sprite.collide_rect(inputbox[index],cursor2):
+                            if pygame.sprite.collide_rect(SmallMenuSpitesList[index],cursor2):
+                                if index==0:
+                                    pass
                                 if index==1:
                                     pass
                                 if index==2:
                                     pass
                                 if index==3:
-                                    pass
-                                if index==4:
-                                    Open_menu()
+                                    print("test")
                                     menu_open=True
+                                    Open_menu()
+                                if index==4:
+                                    pass
                                 if index==5:
                                     pass
-                                if index==6:
-                                    Exit_confirmation()
-                                    exit_confirmation_open=True
+                            index+=1
+                else:
+                    if mousePos[1]<733:
+                        if Inspector_Active:
+                            Inspector_Active=False
+                        else:
+                            Inspector_Active=True
     #Update
     cursor2.update(mousePos)
+    if small_menu_open:
+        if not menu_open:
+            Update_small_menu(0)
+        else:
+            Update_small_menu(1)
+        allSprites.add(SmallMenuSprites)
     if menu_open:
         #menuSprites=pygame.sprite.Group()
         Update_menu()
@@ -286,6 +342,13 @@ while not done:
         screen.blit(buttonLabels[index],(x,741))
         x+=136
         index+=1
+    if small_menu_open:
+        screen.blit(SmallMenuLabels[0],(997,369))
+        screen.blit(SmallMenuLabels[1],(990,430))
+        screen.blit(SmallMenuLabels[2],(955,490))
+        screen.blit(SmallMenuLabels[3],(1000,550))
+        screen.blit(SmallMenuLabels[4],(970,610))
+        screen.blit(SmallMenuLabels[5],(980,670))
     if menu_open:
         screen.blit(MenuLabels[0],(463,155))
         screen.blit(MenuLabels[1],(663,155))
