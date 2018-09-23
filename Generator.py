@@ -9,7 +9,7 @@ screen=pygame.display.set_mode((600,600)) # okno 600x600
 pygame.display.set_caption("Terrain generator") # nazwa okna
 done=False
 imgDir=path.join(path.dirname(__file__),'Textures')   # folder gry
-rockTexture=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock9.png')).convert()  #
+rockTexture=pygame.image.load(path.join(path.join(path.join(path.dirname(__file__),'Textures'),'Rocks'),'Rock14.png')).convert()  #
 rocksTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'stone01.png')).convert()                                    #
 grassTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'grass01.png')).convert_alpha()                              #  Wczytywanie potrzebnych tekstur
 dirtTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'dirt01.png')).convert()                                      # 
@@ -45,6 +45,23 @@ def main(): # główny proces gry
     def generation(): # generacja
         try:
             def PlaceStone(OldTerrain): # stawia kamień na istniejących płytach kamienia z warstwy terrain
+                def CountGrassAround(map1,x,y):
+                    i=-1
+                    count=0
+                    for a in range(3):
+                        j=-1
+                        for b in range(3):
+                            neighbourX=x+i
+                            neighbourY=y+j
+                            if i==0 and j==0:
+                                pass
+                            elif neighbourX<0 or neighbourY<0 or neighbourX>x2-1 or neighbourY>y2-1:
+                                pass
+                            elif map1[neighbourX][neighbourY]==1:
+                                count=count+1
+                            j=j+1
+                        i=i+1
+                    return count
                 Structures=[]
                 for j in range(len(OldTerrain)):
                     lista=[]
@@ -55,12 +72,24 @@ def main(): # główny proces gry
                 for i in range(x2):
                     y=0
                     for j in range(y2):
-                        if OldTerrain[x][y]==1:
+                        if OldTerrain[x][y]==0:
                              Structures[x][y]=0
                         else:
                             pass
                         y+=1
                     x+=1
+                x=0
+                for i in range(x2):
+                    y=0
+                    for j in range(y2):
+                        nbs=CountGrassAround(OldTerrain,x,y)
+                        if OldTerrain[x][y]==1:
+                            pass
+                        elif nbs>1:
+                            Structures[x][y]='-'
+                        y+=1
+                    x+=1
+                #print(Structures)
                 return Structures
             def PlantTrees(OldTerrain): # sadzi drzewa na mapie
                 def Countdirt():
@@ -177,7 +206,7 @@ def main(): # główny proces gry
                         y4+=1
                     x3+=16
                     x4+=1
-            terrain=PlantGrass(terrain)    # sadzenie trawy
+            #terrain=PlantGrass(terrain)    # sadzenie trawy
             x3=0
             x4=0
             for a in range(x2):  # stawianie tilów w odpowiednich miejscach z odpowiednimi teksturami
@@ -198,6 +227,7 @@ def main(): # główny proces gry
                     y4=y4+1
                 x3+=16
                 x4=x4+1
+                #print(terrain)
             structures=PlaceStone(terrain) # stawianie kamieni
             x3=0
             x4=0
@@ -213,8 +243,7 @@ def main(): # główny proces gry
                     y3+=16
                     y4+=1
                 x3+=16
-                y4+=1
-            print(terrain)
+                x4+=1
             terrainL.draw(screen)    # 
             structuresL.draw(screen) # wyświetlanie wszystkiego na ekranie
             pygame.display.flip()    #
@@ -230,7 +259,7 @@ def main(): # główny proces gry
     global z
     global d
     x=StringVar() # dla normalnego biomu ustawić generator na - - 53 5
-    y=StringVar()
+    y=StringVar() # lub - - 50 12
     z=StringVar()
     d=StringVar()
     entry=ttk.Entry(mainframe,width=7, textvariable=x)

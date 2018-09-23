@@ -243,7 +243,7 @@ while not done: # główna pętla gry
     while len(builds2)>0:
         builds2[len(builds2)-1].kill()
         builds2.pop()
-        print(builds2)
+        #print(builds2)
     if drag==1:
         drag_start_x2=drag_start_x
         drag_start_y2=drag_start_y
