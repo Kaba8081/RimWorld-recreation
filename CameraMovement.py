@@ -1,8 +1,10 @@
 import pygame
 from os import path
 
+RESOLUTION=600
+
 pygame.init()
-screen = pygame.display.set_mode((600, 600))
+screen = pygame.display.set_mode((RESOLUTION, RESOLUTION))
 
 done = False
 
@@ -12,10 +14,12 @@ imgDir=path.join(path.dirname(__file__),'Textures')
 stoneTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'stone01.png')).convert()
 dirtTexture=pygame.image.load(path.join(path.join(imgDir,'Grounds'),'dirt01.png')).convert()    
 
+VisibleSprites=pygame.sprite.Group()
 allSprites=pygame.sprite.Group()
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self,x,y,value):
+        self.value=value
         pygame.sprite.Sprite.__init__(self)
         if value==1:
             self.image=stoneTexture
@@ -26,6 +30,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect.left=x
         self.rect.top=y
     def update(self):
+        # Tile movement
         if cameraDirection=='None':
             pass
         elif cameraDirection=='N':
@@ -36,18 +41,29 @@ class Tile(pygame.sprite.Sprite):
             self.rect.centery = self.rect.centery-5
         elif cameraDirection=='W':
             self.rect.centerx = self.rect.centerx+5
-
+        # Optimization stuff
+        if (self.rect.right<0 or self.rect.left>RESOLUTION)or(self.rect.bottom<0 or self.rect.top>RESOLUTION):
+            pass
+        else:
+            if self.value==1:
+                VisibleSprites.add(self)
+            elif self.value==2:
+                VisibleSprites.add(self)
+#
+test="none"
+#
 terrain=[]
 x=0
 x2=0
-for i in range(25):
+for i in range(45):
     y=0
     y2=0
     lista=[]
-    for j in range(25):
+    for j in range(45):
         lista.append('2')
         t=Tile(x,y,2)
         allSprites.add(t)
+        test=t
         y=y+16
     terrain.append(lista)
     x=x+16
@@ -74,7 +90,9 @@ while not done:
         cameraDirection=cameraDirection2
     else:
         cameraDirection="None"
+    #print(test.update())
     screen.fill((0,0,0))
+    VisibleSprites.empty()
     allSprites.update()
-    allSprites.draw(screen)
+    VisibleSprites.draw(screen)
     pygame.display.flip()
