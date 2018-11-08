@@ -4,6 +4,7 @@ from os import path
 RESOLUTION=600
 
 pygame.init()
+clock=pygame.time.Clock()
 screen = pygame.display.set_mode((RESOLUTION, RESOLUTION))
 
 done = False
@@ -55,11 +56,11 @@ test="none"
 terrain=[]
 x=0
 x2=0
-for i in range(45):
+for i in range(100):
     y=0
     y2=0
     lista=[]
-    for j in range(45):
+    for j in range(100):
         lista.append('2')
         t=Tile(x,y,2)
         allSprites.add(t)
@@ -96,3 +97,4 @@ while not done:
     allSprites.update()
     VisibleSprites.draw(screen)
     pygame.display.flip()
+    clock.tick(60)
