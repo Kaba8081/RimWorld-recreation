@@ -177,7 +177,7 @@ def main(): # główny proces gry
                 collumn=[]
                 for b in range(y2):
                     c=random.randint(1,99)
-                    GrassOrDirt=random.randint(1,2)
+                    #GrassOrDirt=random.randint(1,2)
                     if c<z2:
                         t=Tile(1,x3,y3)
                         terrainL.add(t)
