@@ -190,11 +190,11 @@ while not done: # główna pętla gry
                     index=1
                     material='carpet_blue'
         if event.type==pygame.MOUSEBUTTONDOWN: # naciśnięcie przycisku myszy
-            if drag==0:
+            if drag==0 and pygame.mouse.get_pressed()[0]==1:
                 drag_start_x=int(pygame.mouse.get_pos()[0])
                 drag_start_y=int(pygame.mouse.get_pos()[1])
                 drag=1
-            if pygame.mouse.get_pressed()[0]==1: # ppm
+            if pygame.mouse.get_pressed()[0]==1: # lpm
                 a=int(pygame.mouse.get_pos()[0]/16)
                 b=int(pygame.mouse.get_pos()[1]/16)
                 for i in range(a):
@@ -202,7 +202,7 @@ while not done: # główna pętla gry
                 for j in range(b):
                     y2=y2+16
                 MouseButton=0
-            elif pygame.mouse.get_pressed()[2]==1: # lpm
+            elif pygame.mouse.get_pressed()[2]==1: # ppm
                 a=int(pygame.mouse.get_pos()[0]/16)
                 b=int(pygame.mouse.get_pos()[1]/16)
                 for i in range(a):
@@ -274,7 +274,7 @@ while not done: # główna pętla gry
     #    if not block:
     #        t=Tile(lista[0],x2,y2)
     #        t.StructureInit(lista,terrain,int(x2/16),int(y2/16),False,index)
-    #   else:
+    #    else:
     #        t=Tile(lista[8],x2,y2)
     #        t.StructureInit(lista,terrain,int(x2/16),int(y2/16),True)
     #    allSprites.add(t)
